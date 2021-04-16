@@ -31,4 +31,4 @@ MongoDB and mongoose
 
 Frontend part of the project! 🚀
 
-Thank you @LeReacteur.
+🙏🏻 Thank you @LeReacteur.
