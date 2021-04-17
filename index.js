@@ -5,10 +5,12 @@ const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
 const env = require("dotenv").config(); // on active les variables d'environnement
+const cors = require("cors");
 
 /* --------- Initialisation des packages --------- */
 const app = express();
 app.use(formidable());
+app.use(cors());
 
 /* ---------- Initialisation de Cloudinary --------- */
 // Pour gérer le stockage des fichiers reçus par le serveur
