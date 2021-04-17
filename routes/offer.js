@@ -1,25 +1,19 @@
-/* --------- Import et initialisation d'Express --------- */
+// Import - Express
 const express = require("express");
 const router = express.Router();
 
-/* --------- Import d'autres packages --------- */
+// Initialisation - Cloudinary
 const cloudinary = require("cloudinary").v2;
 
-/* ---------- Import des modèles --------- */
+// Models
 const User = require("../models/User");
 const Offer = require("../models/Offer");
 
-/* ---------- Import des middlewares --------- */
+// Middlewares
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
-/* ________________ La requête POSTMAN est la suivante :
-
-POST http://localhost:3000/offer/publish
-BODY (form-data) (...)
-HEADER (authaurization) - bearen token - token ______________ */
-
-/* ---------------- Déclaration des routes ------------------ */
-// Route POST - Création d'une annonce
+// Endpoints offer
+// Create an offer
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
     const {
@@ -33,7 +27,6 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
       color,
     } = req.fields;
 
-    // 1/ Le serveur créer la nouvelle annonce
     const newOffer = new Offer({
       product_name: title,
       product_description: description,
@@ -45,37 +38,29 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
         { SIZE: size },
         { COLOR: color },
       ],
-      //   product_image: {
-      //     secure_url: result,
-      //   },
-      owner: req.user, // req.user (cf. middleware isAutentificated = ref vers le user qui fait la requête)
+      owner: req.user, // (middleware isAuthentificated)
     });
 
     if (req.files) {
-      // 2/ Le serveur récupère également l'image envoyée
-      // !! IMPORTANT DE LA RECUPERER APRES LA DECLARATION DE newOffer
       const pictureOfProduct = req.files.picture.path;
 
-      // 3/ Le serveur envoie cette image sur Cloudinary afin de la sauvegarder et de récupérer une URL correspondant à l'image en échange
       const result = await cloudinary.uploader.upload(pictureOfProduct, {
-        folder: `/vinted/offers/${newOffer._id}`, // l'image sera enregistrée dans un dossier "vinted/offers/id de l'offre"
+        folder: `/vinted/offers/${newOffer._id}`,
         public_id: "basket-nike",
       });
 
-      // On ajoute à l'objet newOffer la clé "product_image" ainsi que sa valeur.
       newOffer.product_image = result;
     }
 
-    // Le serveur enregistre l'offre en BDD
     await newOffer.save();
 
-    // Le serveur répond au client
     res.status(200).json(newOffer);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
+/* ---------------------------------------------- */
 // AF !! Route PUT - Modification d'une annonce
 // router.put("/offer/update/", isAuthenticated, async (req, res) => {
 //   try {
@@ -108,8 +93,10 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 //     res.status(400).json({ error: error.message });
 //   }
 // });
+/* ---------------------------------------------- */
 
-/* ------- Routes comportant des filtres ---------- */
+// Filters
+// Filter an offer
 router.get("/offers", async (req, res) => {
   try {
     /* ---------------------- filtre ✅ ----------------------- */
@@ -134,25 +121,10 @@ router.get("/offers", async (req, res) => {
       };
     }
 
-    /*
-    OU écriture plus concise mais plus compliqué à lire :
-
-    if (req.query.priceMin) {
-      if (filters.product_price) {
-        filters.product_price.$lte = Number(req.query.priceMax);
-      } else {
-        filters.product_price = { $lte: Number(req.query.priceMax) };
-      }
-    }
-    */
-
-    // console.log(filters);
-
     /* ----------------------- sort ✅ ------------------------- */
     const sort = {};
 
     if (req.query.sort) {
-      // On est pas obligé de vérifier si la clé existe.
       if (req.query.sort === "price-asc") {
         sort.product_price = "asc";
       } else if (req.query.sort === "price-desc") {
@@ -160,9 +132,7 @@ router.get("/offers", async (req, res) => {
       }
     }
 
-    // console.log(sort);
-
-    /* ------------------------- page - A REVOIR  ----------------------- */
+    /* ------------------------- page ✅ ----------------------- */
     let skip = 0;
     const limit = 3;
 
@@ -172,17 +142,9 @@ router.get("/offers", async (req, res) => {
       }
     }
 
-    /* ------------------------------------------------------- */
     const results = await Offer.find(filters)
       .sort(sort)
-      .populate("owner", "account") // !! au salt et au hash, il faut filtrer !!
-      /*
-      Ou
-      .populate({
-        path: "owner",
-        select: "account"
-      })
-      */
+      .populate("owner", "account")
       .skip(skip)
       .limit(limit)
       .select("product_name product_price");
@@ -193,7 +155,8 @@ router.get("/offers", async (req, res) => {
   }
 });
 
-/* ------- Routes comportant des params ---------- */
+// Params
+// Get all informations about an offer in particular
 router.get("/offer/:id", async (req, res) => {
   try {
     if (req.params) {
@@ -201,12 +164,7 @@ router.get("/offer/:id", async (req, res) => {
         "owner",
         "account"
       );
-      /*
-      const offers = await Offer.findById(req.params.id).populate(
-        "owner",
-        "account"
-      );
-      */
+
       res.status(200).json(offers);
     } else {
       res.status(400).json({ message: "Missing parameter." });
@@ -216,5 +174,5 @@ router.get("/offer/:id", async (req, res) => {
   }
 });
 
-/* ----------- Export de la route "offer" ----------- */
+// Export - endpoints
 module.exports = router;

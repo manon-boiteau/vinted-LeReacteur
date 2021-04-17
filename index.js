@@ -1,26 +1,24 @@
-/* ------------ Import des packages -------------- */
-// Packages pour le serveur et la BDD
+// Import - packages
 const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
-const env = require("dotenv").config(); // on active les variables d'environnement
+const env = require("dotenv").config();
 const cors = require("cors");
 
-/* --------- Initialisation des packages --------- */
+// Initialisation - packages
 const app = express();
 app.use(formidable());
 app.use(cors());
 
-/* ---------- Initialisation de Cloudinary --------- */
-// Pour gérer le stockage des fichiers reçus par le serveur
+// Initialisation - Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-/* ------------- Connexion à la BDD -------------- */
+// Database connexion
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -28,14 +26,14 @@ mongoose.connect(process.env.MONGODB_URI, {
   useFindAndModify: false,
 });
 
-/* -------------- Import des routes -------------- */
+// Import - endpoints
 const userRoute = require("./routes/user");
 app.use(userRoute);
 
 const offerRoute = require("./routes/offer");
 app.use(offerRoute);
 
-/* ----------------------------------------- */
+// -------------------------
 app.all("*", (req, res) => {
   res.status(404).json({ message: "This endpoint does not exist." });
 });

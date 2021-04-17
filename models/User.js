@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
 
-/* ------------- Déclaration du modèle User -------------- */
 const User = mongoose.model("User", {
   email: {
-    unique: true, // !! On rend ici l'email unique auprès de la BDD !
+    unique: true,
     type: String,
   },
   account: {
@@ -19,5 +18,5 @@ const User = mongoose.model("User", {
   salt: String,
 });
 
-/* ------------- Export du modèle User -------------- */
+// Export model "User"
 module.exports = User;
