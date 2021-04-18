@@ -61,34 +61,93 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
 });
 
 /* ---------------------------------------------- */
-// AF !! Route PUT - Modification d'une annonce
-// router.put("/offer/update/", isAuthenticated, async (req, res) => {
+// Update an offer
+router.put("/offer/update/:id", isAuthenticated, async (req, res) => {
+  const offertToUpdate = await Offer.findById(req.params.id);
+  try {
+    if (req.fields.title) {
+      offertToUpdate.product_name = req.fields.title;
+    }
+
+    if (req.fields.description) {
+      offertToUpdate.product_description = req.fields.description;
+    }
+
+    if (req.fields.price) {
+      offertToUpdate.product_price = req.fields.price;
+    }
+
+    // Loop through details
+    const details = offertToUpdate.product_details;
+    for (let i = 0; i < details.length; i++) {
+      if (details[i].CONDITION) {
+        if (req.fields.condition) {
+          details[i].CONDITION = req.fields.condition;
+        }
+      }
+
+      if (details[i].BRAND) {
+        if (req.fields.brand) {
+          details[i].BRAND = req.fields.brand;
+        }
+      }
+
+      if (details[i].CITY) {
+        if (req.fields.city) {
+          details[i].CITY = req.fields.city;
+        }
+      }
+
+      if (details[i].SIZE) {
+        if (req.fields.size) {
+          details[i].SIZE = req.fields.size;
+        }
+      }
+
+      if (details[i].COLOR) {
+        if (req.fields.color) {
+          details[i].COLOR = req.fields.color;
+        }
+      }
+    }
+
+    //  // ?? Je ne comprends pas ??
+    //  // Notifie Mongoose que l'on a modifié le tableau product_details
+    //  offerToModify.markModified("product_details");
+
+    if (req.files.picture) {
+      const pictureToUpdate = req.files.picture.path;
+      const result = await cloudinary.uploader.upload(pictureToUpdate, {
+        public_id: `/vinted/offers/${offertToUpdate._id}`,
+      });
+      offertToUpdate.product_image = result; // replace the old image by the new one
+    }
+
+    await offertToUpdate.save();
+
+    res.status(200).json("Your offer has been successfully updated.");
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete an offer
+// router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
 //   try {
-//     //
+//     // Delete images inside the folder
+//     await cloudinary.api.delete_resources_by_prefix(
+//       `/vinted/offers/${req.params.id}`
+//     );
 
-//     res.status(200).json("hi");
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// });
+//     // Delete empty folder
+//     await cloudinary.api.delete_folder(`/vinted/offers/${req.params.id}`);
 
-// AF !! Route DELETE - Suppression d'une annonce
-// router.delete("/offer/delete", isAuthenticated, async (req, res) => {
-//   try {
-//     // On recoit le token du user et l'id de l'annonce à supprimer
-//     // On vérifie que le user soit authentifié via le middleware isAuthenticated
-//     // On cherche l'annonce que le user veut supprimer via
-//     // On vérifie que l'annonce appartienne bien au user
-//     // Si oui, on supprime l'annonce
-//     // Puis on supprime les images correspondantes sur Cloudinary
-//     // cloudinary.uploader.destroy('sample', function(result) { console.log(result) });
+//     // Delete offer
+//     await Offer.findByIdAndDelete(req.params.id);
 
-//     // On gère les cas :
-//     // 1. isAuthenticated gère déjà le cas de l'authentification du user
-//     // 2. l'annonce n'existe pas
-//     // 3. l'annonce n'appartienne pas au user
-
-//     res.status(200).json({ message: "Hello" });
+//     res
+//       .status(200)
+//       .json({ message: "Your offer has been successfully deleted." });
 //   } catch (error) {
 //     res.status(400).json({ error: error.message });
 //   }

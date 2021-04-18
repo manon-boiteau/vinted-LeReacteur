@@ -34,6 +34,10 @@ const offerRoute = require("./routes/offer");
 app.use(offerRoute);
 
 // -------------------------
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Welcome to Vinted API by lereacteur !" });
+});
+
 app.all("*", (req, res) => {
   res.status(404).json({ message: "This endpoint does not exist." });
 });

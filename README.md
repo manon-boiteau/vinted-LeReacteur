@@ -13,19 +13,16 @@ Vinted is an online marketplace and community that allows its users to sell, buy
 To code the Vinted app API:
 
 - Sign up and log in
-
-- Authentification
-
+- User authentification
 - Publish an offer (CRUD architecture)
-
 - Implement filters
 
 ## Languages and packages used
 
-JavaScript, Node.js
-Express, Express-formidable, iud2, SHA256, encBase64
-Cloudinary
-MongoDB and mongoose
+JavaScript, Node.js  
+Express, Express-formidable, iud2, SHA256, encBase64  
+Cloudinary  
+MongoDB and Mongoose
 
 ## To be continued
 
