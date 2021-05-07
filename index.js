@@ -42,6 +42,6 @@ app.all("*", (req, res) => {
   res.status(404).json({ message: "This endpoint does not exist." });
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("Go go gooo server 🥳 !");
 });
