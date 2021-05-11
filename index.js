@@ -3,7 +3,7 @@ const express = require("express");
 const formidable = require("express-formidable");
 const mongoose = require("mongoose");
 const cloudinary = require("cloudinary").v2;
-const env = require("dotenv").config();
+require("dotenv").config();
 const cors = require("cors");
 
 // Initialisation - packages
@@ -33,6 +33,9 @@ app.use(userRoute);
 const offerRoute = require("./routes/offer");
 app.use(offerRoute);
 
+const paymentRoute = require("./routes/payment");
+app.use(paymentRoute);
+
 // -------------------------
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Welcome to Vinted API by lereacteur !" });
@@ -42,6 +45,6 @@ app.all("*", (req, res) => {
   res.status(404).json({ message: "This endpoint does not exist." });
 });
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(process.env.PORT || 4000, () => {
   console.log("Go go gooo server 🥳 !");
 });

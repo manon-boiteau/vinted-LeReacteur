@@ -16,16 +16,8 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 // Create an offer
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
-    const {
-      title,
-      description,
-      price,
-      condition,
-      city,
-      brand,
-      size,
-      color,
-    } = req.fields;
+    const { title, description, price, condition, city, brand, size, color } =
+      req.fields;
 
     const newOffer = new Offer({
       product_name: title,
@@ -111,9 +103,7 @@ router.put("/offer/update/:id", isAuthenticated, async (req, res) => {
       }
     }
 
-    //  // ?? Je ne comprends pas ??
-    //  // Notifie Mongoose que l'on a modifié le tableau product_details
-    //  offerToModify.markModified("product_details");
+    offerToModify.markModified("product_details");
 
     if (req.files.picture) {
       const pictureToUpdate = req.files.picture.path;
@@ -132,26 +122,26 @@ router.put("/offer/update/:id", isAuthenticated, async (req, res) => {
 });
 
 // Delete an offer
-// router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
-//   try {
-//     // Delete images inside the folder
-//     await cloudinary.api.delete_resources_by_prefix(
-//       `/vinted/offers/${req.params.id}`
-//     );
+router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
+  try {
+    // Delete images inside the folder 🔔 DELETE INSIDE A FOLDER ✅
+    await cloudinary.api.delete_resources_by_prefix(
+      `/vinted/offers/${req.params.id}`
+    );
 
-//     // Delete empty folder
-//     await cloudinary.api.delete_folder(`/vinted/offers/${req.params.id}`);
+    // Delete empty folder 🔔 CHECK DELETE FOLDER IN CLOUDINARY (DOES NOT WORK)
+    await cloudinary.api.delete_folder(`/vinted/offers/${req.params.id}`);
 
-//     // Delete offer
-//     await Offer.findByIdAndDelete(req.params.id);
+    // Delete offer
+    await Offer.findByIdAndDelete(req.params.id);
 
-//     res
-//       .status(200)
-//       .json({ message: "Your offer has been successfully deleted." });
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// });
+    res
+      .status(200)
+      .json({ message: "Your offer has been successfully deleted." });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 /* ---------------------------------------------- */
 
 // Filters
