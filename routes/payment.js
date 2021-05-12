@@ -8,7 +8,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 router.post("/pay", async (req, res) => {
   try {
     const response = await stripe.charges.create({
-      amount: req.fields.amount,
+      amount: req.fields.amount * 100,
       currency: "eur",
       description: req.fields.title,
       source: req.fields.token,
