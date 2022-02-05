@@ -1,19 +1,14 @@
-// Import - Express
 const express = require("express");
 const router = express.Router();
-
-// Initialisation - Cloudinary
 const cloudinary = require("cloudinary").v2;
 
-// Models
 const User = require("../models/User");
 const Offer = require("../models/Offer");
 
-// Middlewares
 const isAuthenticated = require("../middlewares/isAuthenticated");
 
-// Endpoints offer
-// Create an offer
+// ENDPOINTS OFFER
+// 1 - Create an offer
 router.post("/offer/publish", isAuthenticated, async (req, res) => {
   try {
     const { title, description, price, condition, city, brand, size, color } =
@@ -52,8 +47,7 @@ router.post("/offer/publish", isAuthenticated, async (req, res) => {
   }
 });
 
-/* ---------------------------------------------- */
-// Update an offer
+// 2 - Update an offer
 router.put("/offer/update/:id", isAuthenticated, async (req, res) => {
   const offertToUpdate = await Offer.findById(req.params.id);
   try {
@@ -121,15 +115,15 @@ router.put("/offer/update/:id", isAuthenticated, async (req, res) => {
   }
 });
 
-// Delete an offer
+// 3 - Delete an offer
 router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
   try {
-    // Delete images inside the folder 🔔 DELETE INSIDE A FOLDER ✅
+    // Delete images inside the folder
     await cloudinary.api.delete_resources_by_prefix(
       `/vinted/offers/${req.params.id}`
     );
 
-    // Delete empty folder 🔔 CHECK DELETE FOLDER IN CLOUDINARY (DOES NOT WORK)
+    // Delete empty folder
     await cloudinary.api.delete_folder(`/vinted/offers/${req.params.id}`);
 
     // Delete offer
@@ -142,10 +136,9 @@ router.delete("/offer/delete/:id", isAuthenticated, async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
-/* ---------------------------------------------- */
 
-// Filters
-// Filter an offer
+// ENDPOINTS FILTERS
+// 1 - Filter an offer
 router.get("/offers", async (req, res) => {
   try {
     /* ---------------------- filtre ✅ ----------------------- */
@@ -204,8 +197,7 @@ router.get("/offers", async (req, res) => {
   }
 });
 
-// Params
-// Get all informations about an offer in particular
+// 2 - Get all informations about an offer in particular
 router.get("/offer/:id", async (req, res) => {
   try {
     if (req.params) {
@@ -223,5 +215,4 @@ router.get("/offer/:id", async (req, res) => {
   }
 });
 
-// Export - endpoints
 module.exports = router;

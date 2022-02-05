@@ -1,8 +1,5 @@
-// Import - Express
 const express = require("express");
 const router = express.Router();
-
-// Import - Stripe
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 router.post("/pay", async (req, res) => {
@@ -22,5 +19,4 @@ router.post("/pay", async (req, res) => {
   }
 });
 
-// Export - endpoints
 module.exports = router;

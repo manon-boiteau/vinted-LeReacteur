@@ -12,5 +12,4 @@ const Offer = mongoose.model("Offer", {
   },
 });
 
-// Export model "Offer"
 module.exports = Offer;

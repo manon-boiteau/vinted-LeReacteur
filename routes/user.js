@@ -1,20 +1,14 @@
-// Import - Express
 const express = require("express");
 const router = express.Router();
-
-// Authentification packages
 const uid2 = require("uid2");
 const SHA256 = require("crypto-js/sha256");
 const encBase64 = require("crypto-js/enc-base64");
-
-// Initialisation - Cloudinary
 const cloudinary = require("cloudinary").v2;
 
-// Import - Models
 const User = require("../models/User");
 const Offer = require("../models/Offer");
 
-// Signup endpoints
+// ENDPOINT SIGNUP
 router.post("/user/signup", async (req, res) => {
   try {
     const { email, username, phone, password } = req.fields;
@@ -43,7 +37,6 @@ router.post("/user/signup", async (req, res) => {
 
         // Create user's avatar
         if (req.files) {
-          console.log(req.files);
           const avatar = req.files.avatar.path;
           const result = await cloudinary.uploader.upload(avatar, {
             folder: `/vinted/user/${newUser._id}`,
@@ -75,7 +68,7 @@ router.post("/user/signup", async (req, res) => {
   }
 });
 
-// Login endpoints
+// ENDPOINT LOGIN
 router.post("/user/login", async (req, res) => {
   try {
     const { email, password } = req.fields;
@@ -104,5 +97,4 @@ router.post("/user/login", async (req, res) => {
   }
 });
 
-// Export - endpoints
 module.exports = router;
